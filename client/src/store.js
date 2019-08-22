@@ -1,11 +1,12 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
 const reducer = (state, action) => {
   
   if(action.type === 'SET_MATCHES') {
     return {
       ...state,
-      matches: state.matches.concat(action.payload)
+      matches: action.payload
     };
   } else if(action.type === 'TOGGLE_LOGIN') {
     return {
@@ -19,8 +20,14 @@ const reducer = (state, action) => {
       user: action.payload
     }
   }
-  console.warn(state);
   return state;
 } 
 
-export default createStore(reducer, { matches: [], islogged: false, user:"" });
+const logger = store => next => action => {
+  console.log('dispatching', action)
+  let result = next(action)
+  console.log('next state', store.getState())
+  return result
+}
+
+export default createStore(reducer, { matches: [], islogged: false, user:"" }, applyMiddleware(logger, thunk));

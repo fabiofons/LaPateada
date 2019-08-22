@@ -1,12 +1,13 @@
 import React from 'react';
 import { ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Button } from 'reactstrap';
+import store from '../store';
+import { joinMatch } from '../actionCreators';
 
 class List extends React.Component {
  
   render() {
     return (
       <ListGroup className="my-3">
-        {console.log('matches from props',this.props.state.matches)}
         <ListGroupItem key="header" active>
           <ListGroupItemHeading >Partidos</ListGroupItemHeading>
         </ListGroupItem>
@@ -22,6 +23,9 @@ class List extends React.Component {
             <ListGroupItemText key={m.date} className="my-0">
               Horario: {m.date}
             </ListGroupItemText>
+            <ListGroupItemText key={m.players} className="my-0">
+              Numero de Jugadores: {m.players.length}
+            </ListGroupItemText>
             
             { 
               this.props.state.islogged && <React.Fragment>
@@ -33,7 +37,7 @@ class List extends React.Component {
                       case 'Futbol 7':
                         return m.price/14;
                       case 'Futbol 9':
-                        return m.price/19;
+                        return m.price/18;
                       default:
                         return null;
                     }
@@ -56,28 +60,28 @@ class List extends React.Component {
   }
 
   handleClick = (e) => {
-    console.log('event handler',e)
-    fetch("http://localhost:3001/joinmatch", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': localStorage.getItem("token")
-      },
-      body: JSON.stringify({id: e})
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        alert('No se pudo unir a este partido');
-      } else {
-        if(data.ok){
-          alert('Estas inscrito a este partido');
-          this.render();
-        }
-      }
-    })
-    .catch(error => console.log(error));  
+    store.dispatch(joinMatch(e));
+    // console.log('event handler',e)
+    // fetch("http://localhost:3001/joinmatch", {
+    //   method: "POST",
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Accept: 'application/json',
+    //     'Authorization': localStorage.getItem("token")
+    //   },
+    //   body: JSON.stringify({id: e})
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //   if (data.error) {
+    //     console.log('No se pudo unir a este partido');
+    //   } else {
+    //     if(data.ok){
+    //       console.log('Estas inscrito a este partido');
+    //     }
+    //   }
+    // })
+    // .catch(error => console.log(error));  
   }
 }
 

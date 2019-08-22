@@ -37,20 +37,28 @@ const requireUser = async (req, res, next) => {
 }
 
 app.post('/register', async (req, res, next) => {
-  console.log(req.body.password);
   try {
-    const user = await User.create({
-      nickname: req.body.nickname,
-      email: req.body.email,
-      password: req.body.password
-    });
-    const token = jwt.sign({ userId: user._id }, process.env.SECRET || 'Guantanamo');
-    res.json(token);
+    const exist = await User.findOne({ email: req.body.email });
+    if(exist) {
+      res.json({error: "El usuario ya se encuentra registrado"})
+    } else {
+      const user = await User.create({
+        nickname: req.body.nickname,
+        email: req.body.email,
+        password: req.body.password
+      });
+      const token = jwt.sign({ userId: user._id }, process.env.SECRET || 'Guantanamo');
+      res.json(token);
+    }
   } catch(err) {
-    console.log(err, 'error: ')
-    next(err);
-  }  
+    if(err.name === "ValidationError"){
+      res.json({ error: err.errors });
+    } else {
+      next(err);
+    }  
+  }
 });
+
 
 app.post('/login', async (req, res, next) => {
   try { 
@@ -70,8 +78,11 @@ app.post('/login', async (req, res, next) => {
 app.get('/user', requireUser, (req, res, next) => {
   const info = {
     nickname: res.locals.user.nickname,
+    email: res.locals.user.email,
     id: res.locals.user._id,
-    matches: res.locals.user.matches
+    matches: res.locals.user.matches,
+    repute: res.locals.user.repute,
+    level: res.locals.user.level
   };
   res.json(info);
 })
@@ -122,8 +133,14 @@ app.post('/joinmatch', requireUser, async (req, res, next) => {
     //Update participants of the match
     const match = await Match.find({_id: req.body.id});
     const newPlayer = await match[0].players.concat(res.locals.user._id);
-    const response = await Match.updateOne({_id: req.body.id}, {$set:{"players":newPlayer}});
-    res.json(response);
+    const isUpdate = await Match.updateOne({_id: req.body.id}, {$set:{"players":newPlayer}});
+    console.log("isUpdate", isUpdate)
+    if(isUpdate.ok) {
+      const response = await await Match.find();
+      res.json(response);
+    } else {
+      res.json({ error: "No se puede unir a esta pateada en el momento" })
+    }
   } catch(err) {
     next(err);
   }

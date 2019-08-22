@@ -7,9 +7,9 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  NavLink,
   Button
 } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
 
 
 class NavigationBar extends React.Component {
@@ -19,7 +19,7 @@ class NavigationBar extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.state = {
       isOpen: false,
-      islogged: false
+      islogged: store.getState().islogged
     };
 
     store.subscribe(() => {
@@ -41,20 +41,20 @@ class NavigationBar extends React.Component {
               {this.state.islogged ? 
               <React.Fragment>
                 <NavItem>
-                  <NavLink href="/newmatch/">Crea tu pateada!</NavLink>
+                  <NavLink className="nav-link active" to="/newmatch">Crea tu pateada!</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink href="/profile/" active>Mi perfil</NavLink>
+                  <NavLink className="nav-link active" to="/profile">Mi perfil</NavLink>
                 </NavItem> 
                 <NavItem>
-                  <Button color="danger" onClick={this.handleSubmit} href="/">Cerrar sesión</Button>
+                  <Button color="danger" onClick={this.handleSubmit}>Cerrar sesión</Button>
                 </NavItem>
               </React.Fragment> : <React.Fragment>
                 <NavItem>
-                  <NavLink href="/login/" active>Ingresa!</NavLink>
+                  <NavLink className="nav-link active" to="/login/">Ingresa</NavLink>
                 </NavItem>
                 <NavItem> 
-                  <NavLink href="/register/" active>Registrarse</NavLink>
+                  <NavLink className="nav-link active" to="/register/">Regístrate</NavLink>
                 </NavItem>               
               </React.Fragment>}
             </Nav>
@@ -74,7 +74,8 @@ class NavigationBar extends React.Component {
     e.preventDefault();
     localStorage.clear();
     store.dispatch({
-      type: 'TOGGLE_LOGIN'
+      type: 'TOGGLE_LOGIN',
+      islogged: false
     });
   };
 }

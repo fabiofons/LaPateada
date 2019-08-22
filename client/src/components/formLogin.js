@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/style.css';
+import { loadUser } from '../actionCreators';
 import store from '../store';
 
 class Login extends React.Component {
@@ -60,6 +61,7 @@ class Login extends React.Component {
           islogged: true
         });
         localStorage.setItem("token", data.token);
+        store.dispatch(loadUser());
         this.props.history.push(`/`);
       }
     })

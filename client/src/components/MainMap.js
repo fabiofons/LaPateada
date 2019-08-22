@@ -5,7 +5,7 @@ import NavigationBar from './Navbar';
 import List from './List';
 import L from 'leaflet';
 import store from '../store';
-import moment from 'moment';
+// import moment from 'moment';
 import '../styles/map-pateada.css';
 
 
@@ -27,9 +27,9 @@ class MainMap extends React.Component {
       },
       haveUserLocation: false,
       zoom: 6,
-      matches:[],
-      islogged: false,
-      user:''
+      matches: store.getState().matches,
+      islogged: store.getState().islogged,
+      user: store.getState().user
     }
   
     store.subscribe(() => {
@@ -38,7 +38,8 @@ class MainMap extends React.Component {
         islogged: store.getState().islogged,
         user: store.getState().user
       })
-    });
+    }); 
+    
   }
 
 
@@ -53,29 +54,31 @@ class MainMap extends React.Component {
         haveUserLocation: true,
         zoom: 12
       });
-    });      
+    });
 
-    const localUser = await fetch('http://localhost:3001/user', {
-      headers: {
-        "Authorization": localStorage.getItem('token')
-    }});
-    const user = await localUser.json();
+
     
-    store.dispatch({
-      type: 'SET_USER',
-      payload: user
-    });
+    // const localUser = await fetch('http://localhost:3001/user', {
+    //   headers: {
+    //     "Authorization": localStorage.getItem('token')
+    //   }
+    // });
+    // const user = await localUser.json();
+    
+    // store.dispatch({
+    //   type: 'SET_USER',
+    //   payload: user
+    // });
 
-    const response = await fetch('http://localhost:3001/matches');
-    const matches = await response.json();
-    matches.map(m => {
-      m.date = moment(m.date).format("lll");
-      return m;
-    })
-    store.dispatch({
-      type: 'SET_MATCHES',
-      payload: matches
-    });
+    // const response = await fetch('http://localhost:3001/matches');
+    // const matches = await response.json();
+    // matches.forEach(m => {
+    //   m.date = moment(m.date).format("lll");
+    // })
+    // store.dispatch({
+    //   type: 'SET_MATCHES',
+    //   payload: matches
+    // });
   }
 
   render() {

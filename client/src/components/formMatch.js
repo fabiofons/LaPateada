@@ -2,8 +2,10 @@ import React from 'react';
 import { Col, Row, Form, FormGroup, Label, Input } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import '../styles/style.css';
+import { loadMatches } from '../actionCreators';
+import store from '../store';
 
-class formMatch extends React.Component {
+class FormMatch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -88,18 +90,18 @@ class formMatch extends React.Component {
           </Col>
         </Row>
         <Row>
-          <FormGroup>
-            <FormGroup check>
-              <Label check for='public'>
-                <Input value={this.state.public} type="checkbox" id="public" onChange={this.toggleMode}/>{' '}
-                Pateada pública
-              </Label>
-            </FormGroup>
+          <FormGroup check>
+            <Label check>
+              <Input value={this.state.public} type="checkbox" onChange={this.toggleMode}/>{' '}
+              Pateada Pública
+            </Label>
           </FormGroup>
         </Row>
-        <FormGroup check row>
-        <div className='button blue' onClick={() => this.handleSubmit(this.state)}> REGISTRO </div>
-        </FormGroup>
+        <Row>
+          <FormGroup>
+          <div className=' btn btn-primary mx-4 my-4' onClick={() => this.handleSubmit(this.state)}> REGISTRO </div>
+          </FormGroup>
+        </Row>
       </Form>
     );
   }
@@ -133,6 +135,7 @@ class formMatch extends React.Component {
         alert('Todos los campos deben estar diligenciados, Intentalo nuevamente');
       } else {
         alert('Match creado');
+        store.dispatch(loadMatches());
         this.props.history.push(`/`);
       }
     })
@@ -140,4 +143,4 @@ class formMatch extends React.Component {
   }
 }
 
-export default formMatch;
+export default FormMatch;
